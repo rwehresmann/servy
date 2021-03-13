@@ -4,6 +4,7 @@ defmodule Servy.Handler do
   require Logger
 
   alias Servy.Conv
+  alias Servy.BearController
 
   # @pages_path Path.expand("../../pages", __DIR__)
   @pages_path Path.expand("pages", File.cwd!)
@@ -29,11 +30,11 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{ method: "GET", path: "/bears" } = conv) do
-    %{ conv | status: 200, resp_body: "Teddy, Smokey, Zé Colmeia" }
+    BearController.index(conv)
   end
 
   def route(%Conv{ method: "POST", path: "/bears" } = conv) do
-    %{ conv | status: 201, resp_body: "Created a #{conv.params["type"]} bear named #{conv.params["name"]}." }
+    BearController.create(conv, conv.params)
   end
 
   def route(%Conv{ method: "GET", path: "/bears/new" } = conv) do
@@ -44,13 +45,13 @@ defmodule Servy.Handler do
   end
 
   def route(%Conv{ method: "GET", path: "/bears/" <> id } = conv) do
-    %{ conv | status: 200, resp_body: "Bear #{id}" }
+    params = Map.put(conv.params, "id", id)
+    BearController.show(conv, params)
   end
 
-  def route(%Conv{ method: "DELETE", path: "/bears" <> _id } = conv) do
-    msg = "Deleting a bear is forbidden."
-    Logger.warn(msg)
-    %{ conv | status: 403, resp_body: "Deleting a bear is forbidden." }
+  def route(%Conv{ method: "DELETE", path: "/bears" <> id } = conv) do
+    params = Map.put(conv.params, "id", id)
+    BearController.destroy(conv, params)
   end
 
   def route(%Conv{ method: "GET", path: "/pages/" <> page } = conv) do
@@ -78,7 +79,7 @@ defmodule Servy.Handler do
 end
 
 request1 = """
-GET /bears/new HTTP/1.1
+DELETE /bears/1 HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
@@ -96,5 +97,5 @@ Content-Length: 21
 name=Zé Colmeia&type=Brown
 """
 
-IO.puts Servy.Handler.handle(request2)
+IO.puts Servy.Handler.handle(request1)
 
