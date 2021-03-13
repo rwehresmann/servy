@@ -11,7 +11,10 @@ defmodule Servy.Plugins do
   def emojify(%Conv{} = conv), do: conv
 
   def track(%Conv{status: 404, path: path} = conv) do
-    IO.puts "#{path} not found."
+    if Mix.env != :test do
+      IO.puts "#{path} not found."
+    end
+    
     conv
   end
 
@@ -33,5 +36,11 @@ defmodule Servy.Plugins do
   
   def rewrite_path_captures(%Conv{} = conv, nil), do: conv
 
-  def log(conv), do: IO.inspect(conv)
+  def log(conv) do
+    if Mix.env == :dev do
+      IO.inspect conv
+    end
+
+    conv
+  end
 end
