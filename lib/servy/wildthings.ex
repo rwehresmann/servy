@@ -2,12 +2,11 @@ defmodule Servy.Wildthings do
   alias Servy.Bear
 
   def list_bears do
-    [
-      %Bear{id: 1, name: "Teddy", type: "Brown", hibernating: true},
-      %Bear{id: 2, name: "Zé Colméia", type: "Brown"},
-      %Bear{id: 3, name: "Iceman", type: "Polar", hibernating: true},
-      %Bear{id: 4, name: "Snow", type: "Polar"},
-    ]
+    Path.expand("db", File.cwd!)
+    |> Path.join("bears.json")
+    |> read_json
+    |> Poison.decode!(as: %{"bears" => [%Bear{}]})
+    |> Map.get("bears")
   end
 
   def get_bear(id) when is_integer(id) do
@@ -16,5 +15,15 @@ defmodule Servy.Wildthings do
 
   def get_bear(id) when is_binary(id) do
     id |> String.to_integer |> get_bear
+  end
+
+  defp read_json(source) do
+    case File.read(source) do
+      {:ok, contents} ->
+        contents
+      {:error, reason} ->
+        IO.inspect "Error reading #{source}: #{reason}"
+        "[]"
+    end
   end
 end

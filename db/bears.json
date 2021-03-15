@@ -1,0 +1,26 @@
+{
+  "bears": [
+    {
+      "id": 1,
+      "name": "Teddy",
+      "type": "Brown",
+      "hibernating": true
+    },
+    {
+      "id": 2,
+      "name": "Zé Colméia",
+      "type": "Brown"
+    },
+    {
+      "id": 3,
+      "name": "Iceman",
+      "type": "Polar",
+      "hibernating": true
+    },
+    {
+      "id": 4,
+      "name": "Snow",
+      "type": "Polar"
+    }
+  ]
+}
