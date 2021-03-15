@@ -204,6 +204,54 @@ defmodule HandlerTest do
     """
   end
 
+  test "GET /api/bears" do
+    request = """
+    GET /api/bears HTTP/1.1\r
+    Host: example.com\r
+    User-Agent: ExampleBrowser/1.0\r
+    Accept: */*\r
+    \r
+    """
+  
+    response = handle(request)
+  
+    expected_response = """
+    HTTP/1.1 200 OK\r
+    Content-Type: application/json\r
+    Content-Length: 242\r
+    \r
+    [{"type":"Brown","name":"Teddy","id":1,"hibernating":true},
+     {"type":"Brown","name":"Zé Colméia","id":2,"hibernating":false},
+     {"type":"Polar","name":"Iceman","id":3,"hibernating":true},
+     {"type":"Polar","name":"Snow","id":4,"hibernating":false}]
+    """
+  
+    assert remove_whitespace(response) == remove_whitespace(expected_response)
+  end
+
+  test "POST /api/bears" do
+    request = """
+    POST /api/bears HTTP/1.1\r
+    Host: example.com\r
+    User-Agent: ExampleBrowser/1.0\r
+    Accept: */*\r
+    Content-Type: application/json\r
+    Content-Length: 21\r
+    \r
+    {"name": "Breezly", "type": "Polar"}
+    """
+  
+    response = handle(request)
+  
+    assert response == """
+    HTTP/1.1 201 Created\r
+    Content-Type: text/html\r
+    Content-Length: 35\r
+    \r
+    Created a Polar bear named Breezly.
+    """
+  end
+
   defp remove_whitespace(text) do
     String.replace(text, ~r{\s}, "")
   end

@@ -2,8 +2,8 @@ defmodule Servy.Plugins do
 
   alias Servy.Conv
 
-  def emojify(%Conv{status: 200} = conv) do
-    body = "🎉" <> "\n\n" <> conv.resp_body <> "\n\n" <> "🎉"
+  def emojify(%Conv{status: 200, resp_headers: resp_headers} = conv) do
+    body = if resp_headers["Content-Type"] == "application/json", do: conv.resp_body, else: "🎉" <> "\n\n" <> conv.resp_body <> "\n\n" <> "🎉"
   
     %{ conv | resp_body: body }
   end
