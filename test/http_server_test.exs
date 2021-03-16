@@ -4,7 +4,7 @@ defmodule HttpServerTest do
   alias Servy.HttpServer
   alias Servy.HttpClient
 
-  test "accepts a request on a socket and sends back a response" do
+  test "accepts a request on a socket and sends back a response (HttpClient)" do
     spawn(HttpServer, :start, [4000])
 
     request = """
@@ -27,5 +27,42 @@ defmodule HttpServerTest do
     \r
     Created a Polar bear named Breezly.
     """
+  end
+
+  test "accepts a request on a socket and sends back a response (HTTPoison)" do
+    spawn(HttpServer, :start, [4000])
+
+    {:ok, response} = HTTPoison.get "http://localhost:4000/wildthings"
+
+    assert response.status_code == 200
+    assert response.body == "🎉\n\nBears, Lions, Tigers\n\n🎉"
+  end
+
+  test "accepts a request on a socket and sends back a response handling concurrent requests" do
+    spawn(HttpServer, :start, [4000])
+  
+    caller = self()
+  
+    max_concurrent_requests = 5
+  
+    # Spawn the client processes
+    for _ <- 1..max_concurrent_requests do
+      spawn(fn ->
+        # Send the request
+        {:ok, response} = HTTPoison.get "http://localhost:4000/wildthings"
+  
+        # Send the response back to the caller
+        send(caller, {:ok, response})
+      end)
+    end
+  
+    # Await all {:handled, response} messages from spawned processes.
+    for _ <- 1..max_concurrent_requests do
+      receive do
+        {:ok, response} ->
+          assert response.status_code == 200
+          assert response.body == "🎉\n\nBears, Lions, Tigers\n\n🎉"
+      end
+    end
   end
 end
