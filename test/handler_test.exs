@@ -2,6 +2,7 @@ defmodule HandlerTest do
   use ExUnit.Case
 
   import Servy.Handler, only: [handle: 1]
+  import Servy.Plugins, only: [write_emoji: 1]
 
   test "GET /wildthings" do
     request = """
@@ -19,11 +20,7 @@ defmodule HandlerTest do
     Content-Type: text/html\r
     Content-Length: 32\r
     \r
-    🎉
-
-    Bears, Lions, Tigers
-    
-    🎉
+    #{write_emoji("Bears, Lions, Tigers")}
     """
   end
 
@@ -38,12 +35,7 @@ defmodule HandlerTest do
 
     response = handle(request)
 
-    expected_response = """
-    HTTP/1.1 200 OK\r
-    Content-Type: text/html\r
-    Content-Length: 178\r
-    \r
-    🎉
+    html_chunk = "
     <h1>All The Bears!</h1>
 
     <ul>
@@ -52,7 +44,14 @@ defmodule HandlerTest do
       <li>Teddy-Brown</li>
       <li>ZéColméia-Brown</li>
     </ul>
-    🎉
+    "
+
+    expected_response = """
+    HTTP/1.1 200 OK\r
+    Content-Type: text/html\r
+    Content-Length: 178\r
+    \r
+    #{write_emoji(html_chunk)}
     """
 
     assert remove_whitespace(response) == remove_whitespace(expected_response)
@@ -89,17 +88,19 @@ defmodule HandlerTest do
 
     response = handle(request)
 
+    html_chunk = "
+    <h1>Show Bear</h1>
+    <p>
+    Is Teddy hibernating? <strong>true</strong>
+    </p>
+    "
+
     expected_response = """
     HTTP/1.1 200 OK\r
     Content-Type: text/html\r
     Content-Length: 84\r
     \r
-    🎉
-    <h1>Show Bear</h1>
-    <p>
-    Is Teddy hibernating? <strong>true</strong>
-    </p>
-    🎉
+    #{write_emoji(html_chunk)}
     """
 
     assert remove_whitespace(response) == remove_whitespace(expected_response)
@@ -121,11 +122,7 @@ defmodule HandlerTest do
     Content-Type: text/html\r
     Content-Length: 32\r
     \r
-    🎉
-
-    Bears, Lions, Tigers
-    
-    🎉
+    #{write_emoji("Bears, Lions, Tigers")}
     """
   end
 
@@ -140,12 +137,7 @@ defmodule HandlerTest do
 
     response = handle(request)
 
-    expected_response = """
-    HTTP/1.1 200 OK\r
-    Content-Type: text/html\r
-    Content-Length: 332\r
-    \r
-    🎉
+    html_chunk = "
     <h1>Clark's Wildthings Refuge</h1>
 
     <blockquote>
@@ -155,7 +147,14 @@ defmodule HandlerTest do
     together as one, the whole universe appears as an infinite
     storm of beauty. -- John Muir
     </blockquote>
-    🎉
+    "
+
+    expected_response = """
+    HTTP/1.1 200 OK\r
+    Content-Type: text/html\r
+    Content-Length: 332\r
+    \r
+    #{write_emoji(html_chunk)}
     """
 
     assert remove_whitespace(response) == remove_whitespace(expected_response)

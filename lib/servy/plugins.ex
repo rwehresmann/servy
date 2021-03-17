@@ -6,15 +6,18 @@ defmodule Servy.Plugins do
   do: %{ conv | resp_body: conv.resp_body }
 
   def emojify(%Conv{status: 200} = conv), 
-  do: %{ conv | resp_body: "🎉" <> "\n\n" <> conv.resp_body <> "\n\n" <> "🎉" }
+  do: %{ conv | resp_body: write_emoji(conv.resp_body) }
 
   def emojify(%Conv{} = conv), do: conv
+
+  def write_emoji(content), do: "🎉" <> "\n\n" <> content <> "\n\n" <> "🎉"
 
   def track(%Conv{status: 404, path: path} = conv) do
     if Mix.env != :test do
       IO.puts "#{path} not found."
+      Servy.FourOhFourCounter.bump_count(path)
     end
-    
+
     conv
   end
 
