@@ -1,5 +1,5 @@
 defmodule Servy.GenericServer do
-  alias Servy.PledgeServer
+  alias Servy.PledgeServerHandRolled
 
   def start(callback_module, initial_state, process_name) do
     pid = spawn(__MODULE__, :listen_loop, [initial_state, callback_module])
@@ -28,8 +28,8 @@ defmodule Servy.GenericServer do
         new_state = callback_module.handle_cast(message, state)
         listen_loop(new_state, callback_module)
       unexpected ->
-        IO.puts "Unexpected message: #{inspect unexpected}"
-        listen_loop(state, callback_module)
-    end
+        new_state = callback_module.handle_info(unexpected, state)
+        listen_loop(new_state, callback_module)    
+      end
   end
 end
