@@ -6,7 +6,7 @@ defmodule Servy.Handler do
   alias Servy.Conv
   alias Servy.BearController
   alias Servy.VideoCam
-  
+
   # @pages_path Path.expand("../../pages", __DIR__)
   @pages_path Path.expand("pages", File.cwd!)
 
@@ -25,6 +25,12 @@ defmodule Servy.Handler do
     |> emojify
     |> put_content_length
     |> format_response
+  end
+
+  def route(%Conv{method: "GET", path: "/404s"} = conv) do
+    counts = Servy.FourOhFourCounter.get_counts()
+  
+    %{ conv | status: 200, resp_body: inspect counts }
   end
 
   def route(%Conv{ method: "GET", path: "/api/bears" } = conv) do
@@ -50,6 +56,14 @@ defmodule Servy.Handler do
     where_is_bigfoot = Task.await(task)
 
     %{ conv | status: 200, resp_body: inspect {snapshots, where_is_bigfoot}}
+  end
+
+  def route(%Conv{method: "POST", path: "/pledges"} = conv) do
+    Servy.PledgeController.create(conv, conv.params)
+  end
+
+  def route(%Conv{method: "GET", path: "/pledges"} = conv) do
+    Servy.PledgeController.index(conv)
   end
 
   def route(%Conv{ method: "GET", path: "/hibernate/" <> time } = conv) do
