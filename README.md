@@ -1,21 +1,10 @@
-# Servy
+This Elixir app was developed based on what was teached in the [Elixir course from Pragmatic Studio](https://pragmaticstudio.com/elixir).
 
-**TODO: Add description**
+There is nothing special about the application itslef, but I built it to understand more in depth how Elixir/OTP works and handle generic servers and observers. The picture bellow represents the services structure that is implemented.
 
-## Installation
+![](./servy.png)
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `servy` to your list of dependencies in `mix.exs`:
+To run this app:
 
-```elixir
-def deps do
-  [
-    {:servy, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/servy](https://hexdocs.pm/servy).
-
+  * Install dependencies with `mix deps.get`;
+  * Run it with `mix run --no-halt`.
