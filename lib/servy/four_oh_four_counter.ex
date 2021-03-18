@@ -6,9 +6,9 @@ defmodule Servy.FourOhFourCounter do
 
   # Client
 
-  def start do
+  def start_link(_arg) do
     IO.puts "Starting 404 counter..."
-    GenServer.start(__MODULE__, %{}, name: @process_name)
+    GenServer.start_link(__MODULE__, %{}, name: @process_name)
   end
 
   def bump_count(path) do
